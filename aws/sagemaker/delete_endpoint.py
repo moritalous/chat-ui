@@ -1,6 +1,8 @@
 import boto3
 
-client = boto3.client('sagemaker')
+region = 'us-east-1'
+
+client = boto3.client('sagemaker', region_name=region)
 
 target_tag = {'Key': 'app_name','Value': 'chatui'}
 
