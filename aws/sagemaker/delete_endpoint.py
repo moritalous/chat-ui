@@ -1,19 +1,16 @@
 import boto3
 
-region = 'us-east-1'
-
-client = boto3.client('sagemaker', region_name=region)
-
-target_tag = {'Key': 'app_name','Value': 'chatui'}
-
 if __name__ == '__main__':
 
-  endpoints = client.list_endpoints(MaxResults=100)
+  llm_parameter = boto3.client('ssm').get_parameter(
+    Name='chatui-llm-endpoint'
+  )
 
-  for endpoint in endpoints['Endpoints']:
-    arn = endpoint['EndpointArn']
-    tags = client.list_tags(ResourceArn=arn)
+  endpoint = llm_parameter['Parameter']['Value']
+  
+  print(f"Delete: {endpoint}")
+  boto3.client('sagemaker').delete_endpoint(EndpointName=endpoint)
 
-    if len(list(filter(lambda x: x == target_tag, tags['Tags']))) > 0:
-      print(f"Delete: {endpoint['EndpointName']}")
-      client.delete_endpoint(EndpointName=endpoint['EndpointName'])
+  boto3.client('ssm').delete_parameter(
+    Name='chatui-llm-endpoint'
+  )
