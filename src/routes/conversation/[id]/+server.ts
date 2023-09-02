@@ -17,6 +17,7 @@ import { error } from "@sveltejs/kit";
 import { ObjectId } from "mongodb";
 import { z } from "zod";
 import { AwsClient } from "aws4fetch";
+import { STSClient } from "@aws-sdk/client-sts"
 
 export async function POST({ request, fetch, locals, params }) {
 	const id = z.string().parse(params.id);
@@ -117,10 +118,11 @@ export async function POST({ request, fetch, locals, params }) {
 			inputs: prompt,
 		});
 
+		const client = new STSClient();
 		const aws = new AwsClient({
-			accessKeyId: randomEndpoint.accessKey,
-			secretAccessKey: randomEndpoint.secretKey,
-			sessionToken: randomEndpoint.sessionToken,
+			accessKeyId: (await client.config.credentials()).accessKeyId,
+			secretAccessKey: (await client.config.credentials()).secretAccessKey,
+			sessionToken: (await client.config.credentials()).sessionToken,
 			service: "sagemaker",
 		});
 

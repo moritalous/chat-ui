@@ -4,6 +4,7 @@ import { trimSuffix } from "$lib/utils/trimSuffix";
 import { trimPrefix } from "$lib/utils/trimPrefix";
 import { PUBLIC_SEP_TOKEN } from "$lib/constants/publicSepToken";
 import { AwsClient } from "aws4fetch";
+import { STSClient } from "@aws-sdk/client-sts"
 
 interface Parameters {
 	temperature: number;
@@ -33,10 +34,11 @@ export async function generateFromDefaultEndpoint(
 			inputs: prompt,
 		});
 
+		const client = new STSClient();
 		const aws = new AwsClient({
-			accessKeyId: randomEndpoint.accessKey,
-			secretAccessKey: randomEndpoint.secretKey,
-			sessionToken: randomEndpoint.sessionToken,
+			accessKeyId: (await client.config.credentials()).accessKeyId,
+			secretAccessKey: (await client.config.credentials()).secretAccessKey,
+			sessionToken: (await client.config.credentials()).sessionToken,
 			service: "sagemaker",
 		});
 

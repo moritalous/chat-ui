@@ -12,8 +12,8 @@ type Optional<T, K extends keyof T> = Pick<Partial<T>, K> & Omit<T, K>;
 const sagemakerEndpoint = z.object({
 	host: z.literal("sagemaker"),
 	url: z.string().url(),
-	accessKey: z.string().min(1),
-	secretKey: z.string().min(1),
+	accessKey: z.string().optional(),
+	secretKey: z.string().optional(),
 	sessionToken: z.string().optional(),
 });
 
