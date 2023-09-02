@@ -6,6 +6,7 @@ from sagemaker.huggingface import get_huggingface_llm_image_uri
 
 import boto3
 
+region = 'us-east-1'
 app_name = 'chatui'
 
 execution_role_name = 'AmazonSageMaker-ExecutionRole-for-chatui'
@@ -14,8 +15,9 @@ model_id = 'elyza/ELYZA-japanese-Llama-2-7b-fast-instruct'
 instance_type = 'ml.g4dn.12xlarge'
 gpus = '4'
 
+boto_session = boto3.session.Session(region_name=region)
+sagemaker_session = sagemaker.session.Session(boto_session=boto_session)
 
-region = boto3.session.Session().region_name
 account_id = boto3.client('sts').get_caller_identity()['Account']
 
 def get_sagemaker_execution_role_arn():
@@ -61,7 +63,8 @@ def create_endpoint():
   
   image_uri = get_huggingface_llm_image_uri(
     backend='huggingface', # or lmi
-    # region=region
+    # region=region,
+    session=sagemaker_session
   )
 
   # Hub model configuration <https://huggingface.co/models>
@@ -76,7 +79,8 @@ def create_endpoint():
   huggingface_model = HuggingFaceModel(
     env=hub,                   # configuration for loading model from Hub
     role=get_sagemaker_execution_role_arn(),   # IAM role with permissions to create an endpoint
-    image_uri=image_uri
+    image_uri=image_uri,
+    sagemaker_session=sagemaker_session
   )
 
   # deploy model to SageMaker Inference
@@ -85,6 +89,7 @@ def create_endpoint():
     initial_instance_count=1,
     instance_type=instance_type,
     container_startup_health_check_timeout=600,
+    sagemaker_session=sagemaker_session,
     tags=[{'Key':'app_name', 'Value': app_name}]
   )
 
