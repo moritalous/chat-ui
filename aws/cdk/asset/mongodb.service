@@ -1,0 +1,13 @@
+[Unit]
+Description=MongoDB Container
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=simple
+ExecStartPre=/usr/bin/docker pull mongo
+ExecStop=/usr/bin/docker stop mongo-chatui
+ExecStart=/usr/bin/docker run --rm --name mongo-chatui -p 27017:27017 -v /opt/chatui/mongodb:/data/db mongo
+
+[Install]
+WantedBy=multi-user.target

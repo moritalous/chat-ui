@@ -3,7 +3,7 @@ import boto3
 if __name__ == '__main__':
 
   llm_parameter = boto3.client('ssm').get_parameter(
-    Name='chatui-llm-endpoint'
+    Name='chatui-llm-endpoint_name'
   )
 
   endpoint = llm_parameter['Parameter']['Value']
@@ -13,4 +13,8 @@ if __name__ == '__main__':
 
   boto3.client('ssm').delete_parameter(
     Name='chatui-llm-endpoint'
+  )
+
+  boto3.client('ssm').delete_parameter(
+    Name='chatui-llm-endpoint_name'
   )

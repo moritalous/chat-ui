@@ -93,6 +93,14 @@ def create_endpoint():
 
 
 def put_parameter(endpoint_name: str):
+
+  boto3.client('ssm').put_parameter(
+    Type='String', 
+    Name='chatui-llm-endpoint_name',
+    Value=endpoint_name,
+    Overwrite=True,
+  )
+
   boto3.client('ssm').put_parameter(
     Type='String', 
     Name='chatui-llm-endpoint',
