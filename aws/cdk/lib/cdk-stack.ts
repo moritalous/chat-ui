@@ -85,8 +85,8 @@ export class ChatUiCdkStack extends cdk.Stack {
     chatuiServiceAsset.grantRead(instance.role)
     mongodbServiceAsset.grantRead(instance.role)
 
-    new cdk.CfnOutput(this, 'InstancePublicDnsName', {
-      value: instance.instancePublicDnsName
+    new cdk.CfnOutput(this, 'chat-ui-site-url', {
+      value: `http://${instance.instancePublicDnsName}:80`
     })
 
   }
