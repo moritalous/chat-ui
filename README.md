@@ -4,7 +4,10 @@ AWS内に完結して動作するLLMチャットを構築します。
 
 ## 動作イメージ
 
-[![](http://img.youtube.com/vi/dBgV30pkbAQ/maxresdefault.jpg)](https://youtu.be/dBgV30pkbAQ)
+![](document/image.gif)
+
+続きは[YouTube](https://youtu.be/dBgV30pkbAQ)で公開しています。
+
 
 ## 仕組み
 
@@ -17,13 +20,12 @@ Hugging Faceで公開されているLLMモデルをSageMakerにデプロイし�
 * AWS
   * EC2 (Amazon Linux 2023, t2.small)
   * SageMaker (ml.g4dn.12xlarge)
-  * Systems Manager Parameter Store
   * CDK
 
 * ソフトウェア
   * [HuggingChat](https://github.com/huggingface/chat-ui)
   * [elyza/ELYZA-japanese-Llama-2-7b-fast-instruct](https://huggingface.co/elyza/ELYZA-japanese-Llama-2-7b-fast-instruct)
-  * [MongoDB](https://hub.docker.com/_/mongo) (Docker container)
+  * [MongoDB](https://hub.docker.com/_/mongo) (on Docker)
 
 MongoDBはチャット履歴の保存に使用されるようです。DocumentDBの採用を検討しましたが、Partialインデックス機能がサポートされていないとのことで利用できませんでした。
 
@@ -32,7 +34,7 @@ MongoDBはチャット履歴の保存に使用されるようです。DocumentDB
 
 ## デプロイ手順
 
-AWS CloudShellで行います。
+AWS CloudShellで実行します。
 
 * ソースを取得
 
@@ -44,21 +46,18 @@ git clone https://github.com/moritalous/chat-ui.git
 
 * デプロイスクリプトを実行
 
-スクリプト内でSageMakerエンドポイントの作成と、CDKでVPCとEC2の環境を構築します。EC2内の環境はユーザーデータにてセットアップが実施されます。
+スクリプト内で[SageMakerエンドポイントの作成](aws/sagemaker/create_endpoint.py)と、[CDK](aws/cdk)でVPCとEC2の環境を構築します。EC2内の環境は[ユーザーデータ](aws/cdk/asset/userdata.sh)にてセットアップが実施されます。
 
 ```shell
 cd chat-ui/aws
 sh ./deploy.sh
 ```
 
-```
-出力
-```
-
-デプロイスクリプトは約10分程度で完了します。ユーザーデータの実行はその後5分ほどかかります。
+デプロイスクリプト（SageMakerの作成、CDKの実行）は約10分程度で完了します。CDKの完了後にユーザーデータが実行されます。ユーザーデータの完了までは5分ほどかかります。
 
 環境が構築できたら`http://[EC2パブリックドメイン]:80`へアクセスすることでチャットを開始できます。
 
+HTTPS化や認証機能は含まれていませんのでご注意ください。
 
 ## 廃棄手順
 
