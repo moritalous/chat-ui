@@ -4,14 +4,14 @@ Requires=mongodb.service
 After=mongodb.service
 
 [Service]
-ExecStart=/usr/bin/npm run dev -- --host 0.0.0.0 --port 80
+ExecStart=/usr/bin/node -r dotenv/config build
 WorkingDirectory=/opt/chatui/chat-ui
 Restart=always
 RestartSec=10
 StandardOutput=syslog
 StandardError=syslog
 SyslogIdentifier=ChatUI
-Environment=
+Environment=HOST=0.0.0.0 PORT=80
 
 [Install]
 WantedBy=multi-user.target
