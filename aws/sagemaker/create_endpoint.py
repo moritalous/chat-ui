@@ -15,6 +15,7 @@ instance_type = 'ml.g4dn.12xlarge'
 gpus = '4'
 
 account_id = boto3.client('sts').get_caller_identity()['Account']
+region_name = boto3.session.Session().region_name
 
 tag = {'Key':'app_name', 'Value': app_name}
 
@@ -95,15 +96,14 @@ def put_parameter(endpoint_name: str):
   boto3.client('ssm').put_parameter(
     Type='String', 
     Name='chatui-llm-endpoint',
-    Value=endpoint_name,
-    Tags=[tag]
+    Value=f'https://runtime.sagemaker.{region_name}.amazonaws.com/endpoints/{endpoint_name}/invocations',
+    Overwrite=True,
   )
 
 
 if __name__ == '__main__':
   predictor = create_endpoint()
   endpoint_name = predictor.endpoint_name
-
   put_parameter(endpoint_name=endpoint_name)
 
   print('Success create endpoint')
